@@ -6,6 +6,8 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 	<script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
 	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	
+	<!--Commit a uri.js file with your firebase URL-->
 	<script src="uri.js"></script>
 
 	<script>
@@ -16,11 +18,12 @@
 			
 			var template = $("#resultsTemplate").text();
 			var searchTemplate = $("#searchTemplate").text();
+			var items = [];
+			var listedTags = [];
+			
 			//on click of sendBtn, add text from textarea msgTextArea into messageList
 			$(".save").on("click",saveLink);
-			
 			$(".searchBtn").on("click",search);
-			
 			$(".text").on("keyup",function(e){
 				
 				if(e.which==13)
@@ -39,8 +42,6 @@
 			
 			$("#nuke").on("click",function(){
 				firebase.remove();
-				
-				$("#discussionContainer .messageList").empty();
 			});
 			
 			window.nuke = nuke;
@@ -112,10 +113,6 @@
 				return tags;
 			}
 			
-
-			var items = [];
-			var listedTags = [];
-			
 			firebase.limitToLast(1000).on('child_added', function (snapshot) {
 					
 					var data = snapshot.val();
@@ -134,8 +131,8 @@
 				
 
 					$.each(tags, function( index, value ) {
-						console.log( index + ": " + value );
 						
+						//check and see if it's already in the list
 						if (listedTags.indexOf(value)==-1)
 						{
 							var entry = tagListTemplateReplacer(value);
@@ -143,35 +140,25 @@
 							listedTags.push(value);
 						}
 					})
-					
-					/*
-					if (listedTags.indexOf(tags)==-1)
-					{
-						var entry = tagListTemplateReplacer(tags);
-						$(".tagCloud").append(entry);
-						listedTags.push(tags);
-					}
-					*/
 			}
 			
 			function search()
 			{
+				var returned = [];
 				
 				var tagSearched = $(".search").val().toLowerCase();
 				
 				tagSearched = tagSearched.replace("#","");
-				
-				var returned = [];
 				
 				$(".searchTerm").text(tagSearched);
 				
 				$(".results").empty();
 				
 				$.each(items, function( index, value ) {
-						var a = value.tags;
+						var itemsTag = value.tags;
 						
-						if(a){
-							if(a.indexOf(tagSearched) != -1)
+						if(itemsTag){
+							if(itemsTag.indexOf(tagSearched) != -1)
 							{
 								returned.push(value);
 								var entry = searchItemTemplateReplacer(value);
@@ -180,8 +167,6 @@
 						}
 						
 					});	
-					
-				console.log(returned);
 
 			}
 			

@@ -25,13 +25,24 @@
 			$(".searchBtn").on("click",search);
 			
 	
-			$('body').on('click', '.tag', function() {
+			$('body').on('click touchend', '.tag', function() {
 				$(".search").val($(this).attr("id"));
+				$(this).hide().fadeIn();
 				search();
 				
 			});
 			
+			
+			
 			$(".text").on("keyup",function(e){
+				
+				if(e.which==13)
+				{
+					saveLink();
+				}
+			});
+			
+			$(".name").on("keyup",function(e){
 				
 				if(e.which==13)
 				{
@@ -129,7 +140,14 @@
 					var link = data.link;
 					var name = data.name;
 					var text = data.text;
-					var tags = data.tags;
+					if (data.tags)
+					{
+						var tags = data.tags;
+					}
+					else
+					{
+						var tags = [];
+					}
 					
 					addTagList(tags);
 					
@@ -171,8 +189,9 @@
 				
 				$.each(items, function( index, value ) {
 						var itemsTag = value.tags;
+						var itemBody = value.text;
 						
-						if(itemsTag){
+						
 							if(itemsTag.indexOf(tagSearched) != -1)
 							{
 								returned.push(value);
@@ -180,6 +199,13 @@
 								$(".results").append(entry);
 								entry.hide().fadeIn("slow");
 							}
+							
+						else if(itemBody.toLowerCase().indexOf(tagSearched) != -1)
+						{
+							returned.push(value);
+								var entry = searchItemTemplateReplacer(value);
+								$(".results").append(entry);
+								entry.hide().fadeIn("slow");
 						}
 						
 					});	
@@ -218,8 +244,8 @@
 
 
 <body>
-	
-	
+
+
 	<div id="searchContainer">
 		<h2>Search</h2>
 
@@ -237,25 +263,25 @@
 					<br>
 					<span class="resultsText">{{Text}}</span>
 					<br>
-					
+
 				</div>
 			</script>
 		</div>
 	</div>
-	
+
 	<div id="tagCloudContainer">
-		<h2>Currently used tags</h2>
+		<h2>Popular tags</h2>
 		<div class="tagCloud">
-			
+
 			<script type="yiwei/template" id="searchTemplate">
-				<div class="tag" id="{{Tag}}">#{{Tag}}</div>, 
+				<div class="tag" id="{{Tag}}">#{{Tag}}</div>,
 			</script>
 		</div>
 
 	</div>
 
 	<div id="postContainer">
-	<h2>Save a link</h2>
+		<h2>Save a link</h2>
 		<h3>Link</h3>
 		<input class="inputbox link">
 

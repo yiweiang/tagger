@@ -25,7 +25,7 @@
 			$(".searchBtn").on("click",search);
 			
 	
-			$('body').on('click touchend', '.tag', function() {
+			$('body').on('click', '.tag', function() {
 				$(".search").val($(this).attr("id"));
 				$(this).hide().fadeIn();
 				search();
@@ -62,8 +62,6 @@
 				firebase.remove();
 			});
 			
-			window.nuke = nuke;
-			
 			function nuke()
 			{
 				firebase.remove();
@@ -75,11 +73,12 @@
 				var link = $(".link").val();
 				var text = $(".text").val();
 				var name = $(".name").val();
+				var date = new Date().toISOString();
 				
 				if(URLVerifier(link))
 				{
 				
-				$(".status").text("Message saved")
+				$(".status").text("Link Saved")
 				
 				$(".link").val("");
 				$(".text").val("");
@@ -90,7 +89,7 @@
 
 				var tags = parseHashtags(text);
 
-				firebase.push({name: name, link:link, text:text, tags:tags});
+				firebase.push({name: name, link:link, text:text, tags:tags, date:date});
 				}
 				else
 				{

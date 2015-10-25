@@ -1,0 +1,259 @@
+<html>
+
+<head>
+	<title>Tagger</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+	<script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script src="uri.js"></script>
+
+	<script>
+		
+		
+		//onload this always runs
+		$(function(){
+			
+			var template = $("#resultsTemplate").text();
+			var searchTemplate = $("#searchTemplate").text();
+			//on click of sendBtn, add text from textarea msgTextArea into messageList
+			$(".save").on("click",saveLink);
+			
+			$(".searchBtn").on("click",search);
+			
+			$(".text").on("keyup",function(e){
+				
+				if(e.which==13)
+				{
+					saveLink();
+				}
+			});
+			
+			$(".search").on("keyup",function(e){
+				
+				if(e.which==13)
+				{
+					search();
+				}
+			});
+			
+			$("#nuke").on("click",function(){
+				firebase.remove();
+				
+				$("#discussionContainer .messageList").empty();
+			});
+			
+			window.nuke = nuke;
+			
+			function nuke()
+			{
+				firebase.remove();
+			}
+			
+			function saveLink()
+			{
+				
+				var link = $(".link").val();
+				var text = $(".text").val();
+				
+				if(URLVerifier(link))
+				{
+				
+				$(".status").text("Message saved")
+				
+				$(".link").val("");
+				$(".text").val("");
+				
+				setTimeout(function(){
+					$(".status").text("")
+				}, 5000)
+
+				var tags = parseHashtags(text);
+
+				firebase.push({link:link, text:text, tags:tags});
+				}
+				else
+				{
+					alert("URL is not in the right form");
+				}
+    		 
+			}	
+
+			
+			function parseHashtags(input)
+			{
+				var tags = [];
+				
+				while(input.indexOf("#") != -1){
+				
+					console.log("started")
+				
+					var start = input.indexOf("#");
+					
+					input = input.substring(start, input.length);
+					
+					if(input.indexOf(" ") != -1)
+					{
+							var end = input.indexOf(" ");
+					}
+					
+					else
+					{
+						var end = input.length;
+					}
+					
+					tags.push(input.substring(1, end).toLowerCase());
+								
+					input = input.substring(end+1, input.length);
+					
+				}
+				
+				console.log("Tags: " + tags);
+				return tags;
+			}
+			
+
+			var items = [];
+			var listedTags = [];
+			
+			firebase.limitToLast(1000).on('child_added', function (snapshot) {
+					
+					var data = snapshot.val();
+					var link = data.link;
+					var text = data.text;
+					var tags = data.tags;
+					
+					addTagList(tags);
+					
+					items.push({link, text, tags});
+
+				});
+			
+			function addTagList(tags)
+			{
+				
+
+					$.each(tags, function( index, value ) {
+						console.log( index + ": " + value );
+						
+						if (listedTags.indexOf(value)==-1)
+						{
+							var entry = tagListTemplateReplacer(value);
+							$(".tagCloud").append(entry);
+							listedTags.push(value);
+						}
+					})
+					
+					/*
+					if (listedTags.indexOf(tags)==-1)
+					{
+						var entry = tagListTemplateReplacer(tags);
+						$(".tagCloud").append(entry);
+						listedTags.push(tags);
+					}
+					*/
+			}
+			
+			function search()
+			{
+				
+				var tagSearched = $(".search").val().toLowerCase();
+				
+				tagSearched = tagSearched.replace("#","");
+				
+				var returned = [];
+				
+				$(".searchTerm").text(tagSearched);
+				
+				$(".results").empty();
+				
+				$.each(items, function( index, value ) {
+						var a = value.tags;
+						
+						if(a){
+							if(a.indexOf(tagSearched) != -1)
+							{
+								returned.push(value);
+								var entry = searchItemTemplateReplacer(value);
+								$(".results").append(entry);
+							}
+						}
+						
+					});	
+					
+				console.log(returned);
+
+			}
+			
+
+			
+			function searchItemTemplateReplacer(value){
+				
+				var entry = template.replace("{{URL}}", value.link);
+				entry = entry.replace("{{Link}}", value.link);
+				entry = entry.replace("{{Text}}", value.text);
+
+				return $(entry);
+				
+			}
+			
+			function tagListTemplateReplacer(tag)
+			{
+				var entry = searchTemplate.replace("{{Tag}}", tag);
+
+				return $(entry);
+			}
+				
+			function URLVerifier(textval) {
+				var urlregex = /^(https?|ftp):\/\/([a-zA-Z0-9.-]+(:[a-zA-Z0-9.&%$-]+)*@)*((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(:[0-9]+)*(\/($|[a-zA-Z0-9.,?'\\+&%$#=~_-]+))*$/;
+				return urlregex.test(textval);
+			}
+			
+
+		})
+	</script>
+
+</head>
+
+
+<body>
+<h2>Save a link</h2>
+	<div id="main">
+		<h3>Link</h3>
+		<input class="inputbox link">
+
+		<h3>Text</h3>
+		<input class="inputbox text">
+
+		<div class="submitbox">
+			<input type="button" class="save" value="Save"><span class="status"></span>
+		</div>
+		
+<h2>Search</h2>
+
+		<input class="inputbox search">
+		
+		<div class="search">
+			<input type="button" class="searchBtn" value="Search">
+		</div>
+		
+		<div class="results">
+					<h3 class="searchTerm"></h3>
+					<script type="yiwei/template" id="resultsTemplate">
+						<div id="resultItem">
+							<span class="resultsHeader"><a href="{{URL}}">{{Link}}</a></span><br>
+							<span class="resultsText">{{Text}}</span>
+						</div>
+					</script>
+		</div>
+	
+<h2>Currently used tags</h2>
+		<div class="tagCloud">
+			<script type="yiwei/template" id="searchTemplate">
+						<span>#{{Tag}}</span><br>
+			</script>
+		</div>
+
+	</div>
+
+</html>

@@ -28,7 +28,7 @@
 			$('body').on('click', '.tag', function() {
 				$(".search").val($(this).attr("id"));
 				$(this).hide().fadeIn();
-				search();
+				search($(".search").val().toLowerCase());
 				
 			});
 			
@@ -54,7 +54,7 @@
 				
 				if(e.which==13)
 				{
-					search();
+					search($(".search").val().toLowerCase());
 				}
 			});
 			
@@ -174,11 +174,11 @@
 					})
 			}
 			
-			function search()
+			function search(tagSearched)
 			{
 				var returned = [];
 				
-				var tagSearched = $(".search").val().toLowerCase();
+				//var tagSearched = $(".search").val().toLowerCase();
 				
 				tagSearched = tagSearched.replace("#","");
 				

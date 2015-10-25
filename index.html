@@ -23,6 +23,14 @@
 			$(".inputbox.search").focus();
 			$(".save").on("click",saveLink);
 			$(".searchBtn").on("click",search);
+			
+	
+			$('body').on('click', '.tag', function() {
+				$(".search").val($(this).attr("id"));
+				search();
+				
+			});
+			
 			$(".text").on("keyup",function(e){
 				
 				if(e.which==13)
@@ -140,6 +148,10 @@
 						{
 							var entry = tagListTemplateReplacer(value);
 							$(".tagCloud").append(entry);
+							entry.hide().fadeIn("slow");
+							
+														
+							
 							listedTags.push(value);
 						}
 					})
@@ -166,6 +178,7 @@
 								returned.push(value);
 								var entry = searchItemTemplateReplacer(value);
 								$(".results").append(entry);
+								entry.hide().fadeIn("slow");
 							}
 						}
 						
@@ -188,7 +201,7 @@
 			function tagListTemplateReplacer(tag)
 			{
 				var entry = searchTemplate.replace("{{Tag}}", tag);
-
+				entry = entry.replace("{{Tag}}", tag);
 				return $(entry);
 			}
 				
@@ -233,8 +246,9 @@
 	<div id="tagCloudContainer">
 		<h2>Currently used tags</h2>
 		<div class="tagCloud">
+			
 			<script type="yiwei/template" id="searchTemplate">
-				<div class="tag">#{{Tag}}</div>, 
+				<div class="tag" id="{{Tag}}">#{{Tag}}</div>, 
 			</script>
 		</div>
 

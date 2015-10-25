@@ -34,6 +34,12 @@ h3
 	margin-bottom:10px;
 }
 
+.inputbox.name
+{
+	width:300px;
+}
+
+
 .searchBtn
 {
 
@@ -64,4 +70,63 @@ h3
 #resultItem
 {
 	padding-bottom:10px;
+	color:grey;
+}
+
+.resultsHeader
+{
+
+}
+
+.resultsName
+{
+	font-size:11px;
+}
+a{
+	text-decoration:none;
+}
+
+
+#postContainer
+{
+	width:80%;
+	background-color:#f2f2f2;
+	padding:30px;
+		display: block;
+	margin-left: auto;
+	margin-right: auto;
+		margin-bottom:10px;
+}
+
+#searchContainer
+{
+	width:80%;
+	background-color:#f2f2f2;
+	padding:30px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom:10px;
+}
+
+#tagCloudContainer
+{
+	width:80%;
+	background-color:#f2f2f2;
+	padding:30px;
+	padding-bottom:50px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom:10px;
+}
+
+.tag
+{
+	margin:10px;
+	padding: 10px;
+	color:white;
+	background-color:grey;
+	font-size:12px;
+	
 }

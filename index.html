@@ -20,6 +20,7 @@
 			var listedTags = [];
 			
 			//on click of sendBtn, add text from textarea msgTextArea into messageList
+			$(".inputbox.search").focus();
 			$(".save").on("click",saveLink);
 			$(".searchBtn").on("click",search);
 			$(".text").on("keyup",function(e){
@@ -54,6 +55,7 @@
 				
 				var link = $(".link").val();
 				var text = $(".text").val();
+				var name = $(".name").val();
 				
 				if(URLVerifier(link))
 				{
@@ -69,7 +71,7 @@
 
 				var tags = parseHashtags(text);
 
-				firebase.push({link:link, text:text, tags:tags});
+				firebase.push({name: name, link:link, text:text, tags:tags});
 				}
 				else
 				{
@@ -91,14 +93,16 @@
 					
 					input = input.substring(start, input.length);
 					
+					var end;
+					
 					if(input.indexOf(" ") != -1)
 					{
-							var end = input.indexOf(" ");
+					 	end = input.indexOf(" ");
 					}
 					
 					else
 					{
-						var end = input.length;
+						end = input.length;
 					}
 					
 					tags.push(input.substring(1, end).toLowerCase());
@@ -115,12 +119,13 @@
 					
 					var data = snapshot.val();
 					var link = data.link;
+					var name = data.name;
 					var text = data.text;
 					var tags = data.tags;
 					
 					addTagList(tags);
 					
-					items.push({link, text, tags});
+					items.push({link, name, text, tags});
 
 				});
 			
@@ -175,7 +180,7 @@
 				var entry = template.replace("{{URL}}", value.link);
 				entry = entry.replace("{{Link}}", value.link);
 				entry = entry.replace("{{Text}}", value.text);
-
+				entry = entry.replace("{{Name}}", value.name);
 				return $(entry);
 				
 			}
@@ -200,18 +205,9 @@
 
 
 <body>
-	<h2>Save a link</h2>
-	<div id="main">
-		<h3>Link</h3>
-		<input class="inputbox link">
-
-		<h3>Text</h3>
-		<input class="inputbox text">
-
-		<div class="submitbox">
-			<input type="button" class="save" value="Save"><span class="status"></span>
-		</div>
-
+	
+	
+	<div id="searchContainer">
 		<h2>Search</h2>
 
 		<input class="inputbox search">
@@ -224,21 +220,44 @@
 			<h3 class="searchTerm"></h3>
 			<script type="yiwei/template" id="resultsTemplate">
 				<div id="resultItem">
-					<span class="resultsHeader"><a href="{{URL}}">{{Link}}</a></span>
+					<span class="resultsHeader"><a href="{{URL}}">{{Link}}</a></span> <span class="resultsName">(Submitted by: {{Name}})</span>
 					<br>
 					<span class="resultsText">{{Text}}</span>
+					<br>
+					
 				</div>
 			</script>
 		</div>
-
+	</div>
+	
+	<div id="tagCloudContainer">
 		<h2>Currently used tags</h2>
 		<div class="tagCloud">
 			<script type="yiwei/template" id="searchTemplate">
-				<span>#{{Tag}}</span>
-				<br>
+				<span class="tag">#{{Tag}}</span>, 
 			</script>
 		</div>
 
 	</div>
+
+	<div id="postContainer">
+	<h2>Save a link</h2>
+		<h3>Link</h3>
+		<input class="inputbox link">
+
+		<h3>Text</h3>
+		<input class="inputbox text">
+
+		<h3>Name</h3>
+		<input class="inputbox name">
+
+		<div class="submitbox">
+			<input type="button" class="save" value="Save"><span class="status"></span>
+		</div>
+	</div>
+
+
+	
+	
 
 </html>
